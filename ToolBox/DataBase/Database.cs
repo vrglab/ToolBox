@@ -30,9 +30,6 @@ namespace ToolBox.ToolBox.DataBase
             MySqlCommand cmd = new MySqlCommand(querry, mconect);
             MySqlDataReader rdr = cmd.ExecuteReader();
 
-
-
-
             List<object> data = new List<object>();
 
             for (int i = 0; i < rdr.FieldCount; i++)
