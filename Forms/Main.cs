@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ToolBox.Forms;
 
 namespace ToolBox
 {
@@ -15,6 +16,12 @@ namespace ToolBox
         public Main()
         {
             InitializeComponent();
+        }
+
+        private void decompilers_Click(object sender, EventArgs e)
+        {
+            Decompiler_Page dp = new Decompiler_Page();
+            dp.Show();
         }
     }
 }

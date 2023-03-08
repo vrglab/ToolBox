@@ -28,13 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.decompilers = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // decompilers
+            // 
+            this.decompilers.Location = new System.Drawing.Point(30, 52);
+            this.decompilers.Name = "decompilers";
+            this.decompilers.Size = new System.Drawing.Size(86, 23);
+            this.decompilers.TabIndex = 0;
+            this.decompilers.Text = "Decompilers";
+            this.decompilers.UseVisualStyleBackColor = true;
+            this.decompilers.Click += new System.EventHandler(this.decompilers_Click);
+            // 
+            // Main
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.decompilers);
+            this.Name = "Main";
             this.Text = "Form1";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Button decompilers;
     }
 }
 
