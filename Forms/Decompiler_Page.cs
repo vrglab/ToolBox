@@ -17,6 +17,7 @@ using ICSharpCode.Decompiler.Metadata;
 using ICSharpCode.Decompiler.Disassembler;
 using System.Threading;
 using ICSharpCode.Decompiler.CSharp.Syntax;
+using ToolBox.ToolBox;
 
 namespace ToolBox.Forms
 {
@@ -69,7 +70,7 @@ namespace ToolBox.Forms
                 foreach (var item in ed)
                 {
                     var sd = new FileStream(outputFolder + "/"+ item.StartLocation + item.NameToken.Name+".cs", FileMode.Create) ;
-                    byte[] data = stringToBytearray(item.ToString());
+                    byte[] data = Utils.stringToBytearray(item.ToString());
 
                     sd.Write(data, 0, data.Length);
                     sd.Close();
@@ -82,11 +83,6 @@ namespace ToolBox.Forms
                 ep.ShowDialog();
                 return;
             }    
-        }
-    
-        private byte[] stringToBytearray(string data)
-        {
-            return Encoding.Default.GetBytes(data);
         }
     }
 }
