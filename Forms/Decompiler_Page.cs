@@ -43,7 +43,6 @@ namespace ToolBox.Forms
             }
         }
 
-
         private void decompileUnityTo(string exeFile, string outputFolder)
         {
             FileInfo fi = new FileInfo(exeFile);
@@ -89,6 +88,5 @@ namespace ToolBox.Forms
         {
             return Encoding.Default.GetBytes(data);
         }
-    
     }
 }
