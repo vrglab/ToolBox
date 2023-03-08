@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ToolBox.ToolBox.DataBase;
 
 namespace ToolBox
 {
@@ -16,6 +17,7 @@ namespace ToolBox
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Database.OpenConnection();
             Application.Run(new Main());
         }
     }
