@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ToolBox.ToolBox
 {
-    public class Utils
+    public static class Utils
     {
         public static byte[] stringToBytearray(string data)
         {

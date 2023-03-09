@@ -32,13 +32,10 @@ namespace ToolBox.Forms
 
                 var fileStreamWriter = new FileStream(exeFile.FileName, FileMode.Create);
 
-                byte[] barray = Encoding.UTF8.GetBytes(encryptedTextr3);
-
-                fileStreamWriter.Write(barray, 0, barray.Length);
+                fileStreamWriter.Write(encryptedTextr3, 0, encryptedTextr3.Length);
                 fileStreamWriter.Close();
             }
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             OpenFileDialog exeFile = new OpenFileDialog();
@@ -46,25 +43,17 @@ namespace ToolBox.Forms
 
             if (exeFile.ShowDialog() == DialogResult.OK)
             {
-                var fileStream = new FileStream(exeFile.FileName, FileMode.OpenOrCreate);
-                var readerStream = new StreamReader(fileStream);
-
                 FileInfo fi = new FileInfo(exeFile.FileName);
 
-                var decryptedTextr1 = Decrypt(readerStream.ReadToEnd(), textBox1.Text);
+                var decryptedTextr1 = Decrypt(File.ReadAllBytes(exeFile.FileName), textBox1.Text);
                 var decryptedTextr2 = Decrypt(decryptedTextr1, textBox1.Text);
                 var decryptedTextr3 = Decrypt(decryptedTextr2, textBox1.Text);
-
-                fileStream.Close();
-                readerStream.Close();
 
                 fi.Delete();
 
                 var fileStreamWriter = new FileStream(exeFile.FileName, FileMode.Create);
 
-                byte[] barray = Encoding.UTF8.GetBytes(decryptedTextr3);
-
-                fileStreamWriter.Write(barray, 0, barray.Length);
+                fileStreamWriter.Write(decryptedTextr3, 0, decryptedTextr3.Length);
                 fileStreamWriter.Close();
             }
         }
@@ -75,7 +64,7 @@ namespace ToolBox.Forms
         // This constant determines the number of iterations for the password bytes generation function.
         private const int DerivationIterations = 1000;
 
-        public static string Encrypt(string plainText, string passPhrase)
+        public string Encrypt(string plainText, string passPhrase)
         {
             // Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
             // so that the same Salt and IV values can be used when decrypting.  
@@ -112,7 +101,7 @@ namespace ToolBox.Forms
             }
         }
 
-        public static string Decrypt(string cipherText, string passPhrase)
+        public string Decrypt(string cipherText, string passPhrase)
         {
             // Get the complete stream of bytes that represent:
             // [32 bytes of Salt] + [32 bytes of IV] + [n bytes of CipherText]
@@ -147,7 +136,7 @@ namespace ToolBox.Forms
             }
         }
 
-        public static string Encrypt(byte[] plainText, string passPhrase)
+        public byte[] Encrypt(byte[] plainText, string passPhrase)
         {
             // Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
             // so that the same Salt and IV values can be used when decrypting.  
@@ -161,7 +150,7 @@ namespace ToolBox.Forms
                 {
                     symmetricKey.BlockSize = 256;
                     symmetricKey.Mode = CipherMode.CBC;
-                    symmetricKey.Padding = PaddingMode.PKCS7;
+                    symmetricKey.Padding = PaddingMode.ANSIX923;
                     using (var encryptor = symmetricKey.CreateEncryptor(keyBytes, ivStringBytes))
                     {
                         using (var memoryStream = new MemoryStream())
@@ -176,7 +165,7 @@ namespace ToolBox.Forms
                                 cipherTextBytes = cipherTextBytes.Concat(memoryStream.ToArray()).ToArray();
                                 memoryStream.Close();
                                 cryptoStream.Close();
-                                return Convert.ToBase64String(cipherTextBytes);
+                                return cipherTextBytes;
                             }
                         }
                     }
@@ -184,7 +173,41 @@ namespace ToolBox.Forms
             }
         }
 
-        private static byte[] Generate256BitsOfRandomEntropy()
+        public byte[] Decrypt(byte[] cipherText, string passPhrase)
+        {
+            // Get the complete stream of bytes that represent:
+            // [32 bytes of Salt] + [32 bytes of IV] + [n bytes of CipherText]
+            var cipherTextBytesWithSaltAndIv = cipherText;
+            // Get the saltbytes by extracting the first 32 bytes from the supplied cipherText bytes.
+            var saltStringBytes = cipherTextBytesWithSaltAndIv.Take(Keysize / 8).ToArray();
+            // Get the IV bytes by extracting the next 32 bytes from the supplied cipherText bytes.
+            var ivStringBytes = cipherTextBytesWithSaltAndIv.Skip(Keysize / 8).Take(Keysize / 8).ToArray();
+            // Get the actual cipher text bytes by removing the first 64 bytes from the cipherText string.
+            var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip((Keysize / 8) * 2).Take(cipherTextBytesWithSaltAndIv.Length - ((Keysize / 8) * 2)).ToArray();
+
+            using (var password = new Rfc2898DeriveBytes(passPhrase, saltStringBytes, DerivationIterations))
+            {
+                var keyBytes = password.GetBytes(Keysize / 8);
+                using (var symmetricKey = new RijndaelManaged())
+                {
+                    symmetricKey.BlockSize = 256;
+                    symmetricKey.Mode = CipherMode.CBC;
+                    symmetricKey.Padding = PaddingMode.ANSIX923;
+                    using (var decryptor = symmetricKey.CreateDecryptor(keyBytes, ivStringBytes))
+                    {
+                        using (var memoryStream = new MemoryStream(cipherTextBytes))
+                        {
+                            using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
+                            {
+                               return BitConverter.GetBytes(cryptoStream.ReadByte());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private byte[] Generate256BitsOfRandomEntropy()
         {
             var randomBytes = new byte[32]; // 32 Bytes will give us 256 bits.
             using (var rngCsp = new RNGCryptoServiceProvider())
