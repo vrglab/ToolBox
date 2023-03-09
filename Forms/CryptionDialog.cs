@@ -56,8 +56,6 @@ namespace ToolBox.Forms
 
 
         private const int Keysize = 256;
-
-        // This constant determines the number of iterations for the password bytes generation function.
         private const int DerivationIterations = 1000;
 
         public string Encrypt(string plainText, string passPhrase)
