@@ -25,14 +25,12 @@ namespace ToolBox.Forms
                 FileInfo fi = new FileInfo(exeFile.FileName);
 
                 var encryptedTextr1 = Encrypt(File.ReadAllBytes(exeFile.FileName), textBox1.Text);
-                var encryptedTextr2 = Encrypt(encryptedTextr1, textBox1.Text);
-                var encryptedTextr3 = Encrypt(encryptedTextr2, textBox1.Text);
 
                 fi.Delete();
 
                 var fileStreamWriter = new FileStream(exeFile.FileName, FileMode.Create);
 
-                fileStreamWriter.Write(encryptedTextr3, 0, encryptedTextr3.Length);
+                fileStreamWriter.Write(encryptedTextr1, 0, encryptedTextr1.Length);
                 fileStreamWriter.Close();
             }
         }
@@ -46,14 +44,12 @@ namespace ToolBox.Forms
                 FileInfo fi = new FileInfo(exeFile.FileName);
 
                 var decryptedTextr1 = Decrypt(File.ReadAllBytes(exeFile.FileName), textBox1.Text);
-                var decryptedTextr2 = Decrypt(decryptedTextr1, textBox1.Text);
-                var decryptedTextr3 = Decrypt(decryptedTextr2, textBox1.Text);
 
                 fi.Delete();
 
                 var fileStreamWriter = new FileStream(exeFile.FileName, FileMode.Create);
 
-                fileStreamWriter.Write(decryptedTextr3, 0, decryptedTextr3.Length);
+                fileStreamWriter.Write(decryptedTextr1, 0, decryptedTextr1.Length);
                 fileStreamWriter.Close();
             }
         }
@@ -138,8 +134,6 @@ namespace ToolBox.Forms
 
         public byte[] Encrypt(byte[] plainText, string passPhrase)
         {
-            // Salt and IV is randomly generated each time, but is preprended to encrypted cipher text
-            // so that the same Salt and IV values can be used when decrypting.  
             var saltStringBytes = Generate256BitsOfRandomEntropy();
             var ivStringBytes = Generate256BitsOfRandomEntropy();
             var plainTextBytes = plainText;
@@ -150,7 +144,7 @@ namespace ToolBox.Forms
                 {
                     symmetricKey.BlockSize = 256;
                     symmetricKey.Mode = CipherMode.CBC;
-                    symmetricKey.Padding = PaddingMode.ANSIX923;
+                    symmetricKey.Padding = PaddingMode.PKCS7;
                     using (var encryptor = symmetricKey.CreateEncryptor(keyBytes, ivStringBytes))
                     {
                         using (var memoryStream = new MemoryStream())
@@ -175,14 +169,10 @@ namespace ToolBox.Forms
 
         public byte[] Decrypt(byte[] cipherText, string passPhrase)
         {
-            // Get the complete stream of bytes that represent:
-            // [32 bytes of Salt] + [32 bytes of IV] + [n bytes of CipherText]
             var cipherTextBytesWithSaltAndIv = cipherText;
-            // Get the saltbytes by extracting the first 32 bytes from the supplied cipherText bytes.
+            
             var saltStringBytes = cipherTextBytesWithSaltAndIv.Take(Keysize / 8).ToArray();
-            // Get the IV bytes by extracting the next 32 bytes from the supplied cipherText bytes.
             var ivStringBytes = cipherTextBytesWithSaltAndIv.Skip(Keysize / 8).Take(Keysize / 8).ToArray();
-            // Get the actual cipher text bytes by removing the first 64 bytes from the cipherText string.
             var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip((Keysize / 8) * 2).Take(cipherTextBytesWithSaltAndIv.Length - ((Keysize / 8) * 2)).ToArray();
 
             using (var password = new Rfc2898DeriveBytes(passPhrase, saltStringBytes, DerivationIterations))
@@ -192,7 +182,7 @@ namespace ToolBox.Forms
                 {
                     symmetricKey.BlockSize = 256;
                     symmetricKey.Mode = CipherMode.CBC;
-                    symmetricKey.Padding = PaddingMode.ANSIX923;
+                    symmetricKey.Padding = PaddingMode.PKCS7;
                     using (var decryptor = symmetricKey.CreateDecryptor(keyBytes, ivStringBytes))
                     {
                         using (var memoryStream = new MemoryStream(cipherTextBytes))
