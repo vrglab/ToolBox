@@ -23,5 +23,11 @@ namespace ToolBox
             Decompiler_Page dp = new Decompiler_Page();
             dp.Show();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            CryptionDialog cd = new CryptionDialog();
+            cd.Show();
+        }
     }
 }

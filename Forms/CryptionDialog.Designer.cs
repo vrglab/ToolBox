@@ -1,6 +1,6 @@
-﻿namespace ToolBox
+﻿namespace ToolBox.Forms
 {
-    partial class Main
+    partial class CryptionDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -28,47 +28,57 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.decompilers = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-            // 
-            // decompilers
-            // 
-            this.decompilers.Location = new System.Drawing.Point(30, 52);
-            this.decompilers.Name = "decompilers";
-            this.decompilers.Size = new System.Drawing.Size(86, 23);
-            this.decompilers.TabIndex = 0;
-            this.decompilers.Text = "Decompilers";
-            this.decompilers.UseVisualStyleBackColor = true;
-            this.decompilers.Click += new System.EventHandler(this.decompilers_Click);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(141, 52);
+            this.button1.Location = new System.Drawing.Point(94, 86);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Cryption";
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Encrypt";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // Main
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(210, 86);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "Decrypt";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(141, 22);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 2;
+            // 
+            // CryptionDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(381, 133);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.decompilers);
-            this.Name = "Main";
-            this.Text = "Form1";
+            this.Name = "CryptionDialog";
+            this.Text = "CryptionDialog";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button decompilers;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
-
